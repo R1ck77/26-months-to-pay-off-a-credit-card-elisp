@@ -31,6 +31,12 @@ It will take you 70 months to pay off this card."))
 What is the APR of the card (as percent)? 12
 What is the monthly payment you can make? 20
 
-The payment is too low: you will never pay the debit off."))))
-
+The payment is too low: you will never pay the debit off."))
+    (it "Prints the warning for unsolvability in red"
+      (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 20)))
+      (credit-card-compute-months)
+      (goto-char (point-max))
+      (search-backward "The payment is too low")
+      (expect (get-text-property (point) 'font-lock-face )
+              :to-equal '(:foreground "red")))))
 

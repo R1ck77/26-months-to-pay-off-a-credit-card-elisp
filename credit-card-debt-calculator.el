@@ -46,13 +46,17 @@
     (insert (format " %g\n" result))
     result))
 
+(defun ccdc--red-text (text)
+  (put-text-property 1 (length text) 'font-lock-face '(:foreground "red") text)
+  text)
+
 (defun ccdc--procedure ()
   (condition-case var
    (insert (format "\nIt will take you %d months to pay off this card."
                    (credit-card-compute-months-to-pay-off (ccdc--read-echo-positive-value "What is your balance?")
                                                           (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?")
                                                           (ccdc--read-echo-positive-value "What is the monthly payment you can make?"))))
-   (error (insert "\nThe payment is too low: you will never pay the debit off."))))
+   (error (insert (ccdc--red-text "\nThe payment is too low: you will never pay the debit off.")))))
 
 (defun ccdc--mode ()
   (kill-all-local-variables)  
