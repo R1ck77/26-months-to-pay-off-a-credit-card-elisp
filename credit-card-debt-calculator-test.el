@@ -22,6 +22,15 @@
 What is the APR of the card (as percent)? 12
 What is the monthly payment you can make? 100
 
-It will take you 70 months to pay off this card."))))
+It will take you 70 months to pay off this card."))
+    (it "handles the case where the monthly payment is too low to pay off the debt"
+      (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 20)))
+      (credit-card-compute-months)
+      (expect (buffer-substring (point-min) (point-max))
+              :to-equal "What is your balance? 5000
+What is the APR of the card (as percent)? 12
+What is the monthly payment you can make? 20
+
+The payment is too low: you will never pay the debit off."))))
 
 

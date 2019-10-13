@@ -39,7 +39,7 @@
 
 (defun ccdc--read-echo-positive-value (message)
   (insert message)
-  (let ((result (ccdc--read-positive-value message)))
+  (let ((result (ccdc--read-positive-value (format "%s " message))))
     (insert (format " %g\n" result))
     result))
 
