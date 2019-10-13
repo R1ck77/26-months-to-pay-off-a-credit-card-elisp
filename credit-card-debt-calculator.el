@@ -7,6 +7,8 @@
 (defconst ccdc--mode-name "Credit Card Calculator Mode")
 (defconst ccdc--buffer-name (concat "* " ccdc--mode-name " *"))
 
+(defconst ccdc--computation-mode-query "Do you want to compute the time to pay the debt off (t) or the money required ($)? ")
+
 (defun ccdc--raw-months-to-pay-off (balance apr-fraction monthly-payment)
   (let ((inc-i (+ (/ apr-fraction 365.0) 1.0))
         (b-on-p (/ balance monthly-payment)))
@@ -49,13 +51,38 @@
   (put-text-property 1 (length text) 'font-lock-face '(:foreground "red") text)
   text)
 
-(defun ccdc--procedure ()
+(defun ccdc--read-computation-mode ()
+  (let ((result (read-string ccdc--computation-mode-query)))
+    (cond
+     ((equal result "$") "$")
+     ((equal (downcase result) "t") "t")
+     (:otherwise (ccdc--read-computation-mode)))))
+
+(defun ccdc--ask-calculation-mode ()
+  (insert ccdc--computation-mode-query)
+  (let ((result (ccdc--read-computation-mode)))
+    (insert result)
+    (insert "\n")
+    (cond
+      ((equal result "$") :money-to-pay-debt)
+      ((equal result "t") :time-to-pay-debt))))
+
+(defun ccdc--time-to-pay-debt-procedure ()
   (condition-case var
    (insert (format "\nIt will take you %d months to pay off this card."
                    (credit-card-compute-months-to-pay-off (ccdc--read-echo-positive-value "What is your balance?")
                                                           (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?")
                                                           (ccdc--read-echo-positive-value "What is the monthly payment you can make?"))))
    (error (insert (ccdc--red-text "\nThe payment is too low: you will never pay the debit off.")))))
+
+(defun ccdc--money-to-pay-debt-procedure ()
+  (error "this procedure has not been implemented (yet!)"))
+
+(defun ccdc--procedure ()
+  (case (ccdc--ask-calculation-mode)
+    (:money-to-pay-debt (ccdc--money-to-pay-debt-procedure))
+    (:time-to-pay-debt (ccdc--time-to-pay-debt-procedure))
+    (t (error "Unexpected result for the calculation mode!"))))
 
 (defun ccdc--mode ()
   (kill-all-local-variables)  

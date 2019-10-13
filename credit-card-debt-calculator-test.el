@@ -16,24 +16,29 @@
         (insert "Text I don't want to see")
         (setq buffer-read-only t))
       (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 -12 100)))
+      (spy-on 'read-string :and-return-value "t")      
       (credit-card-compute-months)
       (expect (buffer-substring (point-min) (point-max))
-              :to-equal "What is your balance? 5000
+              :to-equal "Do you want to compute the time to pay the debt off (t) or the money required ($)? t
+What is your balance? 5000
 What is the APR of the card (as percent)? 12
 What is the monthly payment you can make? 100
 
 It will take you 70 months to pay off this card."))
     (it "handles the case where the monthly payment is too low to pay off the debt"
       (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 20)))
+      (spy-on 'read-string :and-return-value "t")
       (credit-card-compute-months)
       (expect (buffer-substring (point-min) (point-max))
-              :to-equal "What is your balance? 5000
+              :to-equal "Do you want to compute the time to pay the debt off (t) or the money required ($)? t
+What is your balance? 5000
 What is the APR of the card (as percent)? 12
 What is the monthly payment you can make? 20
 
 The payment is too low: you will never pay the debit off."))
     (it "Prints the warning for unsolvability in red"
       (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 20)))
+      (spy-on 'read-string :and-return-value "t")
       (credit-card-compute-months)
       (goto-char (point-max))
       (search-backward "The payment is too low")
