@@ -1,3 +1,4 @@
+(require 'cl)
 
 (defun generate-supplier (results)
   (lexical-let ((results results))

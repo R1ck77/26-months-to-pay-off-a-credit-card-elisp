@@ -11,4 +11,6 @@
                                 (/ apr 100.0)
                                 monthly-payment)))
 
+(defun credit-card-calculator-mode ())
+
 (provide 'credit-card-debt-calculator)
