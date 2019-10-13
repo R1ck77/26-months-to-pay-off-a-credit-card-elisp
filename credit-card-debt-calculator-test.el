@@ -15,12 +15,12 @@
       (with-current-buffer (get-buffer-create "* Credit Card Calculator Mode *")
         (insert "Text I don't want to see")
         (setq buffer-read-only t))
-      (spy-on 'read-string :and-call-fake (generate-supplier (list 2500 "abc" 12 -12 100)))
+      (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 -12 100)))
       (credit-card-compute-months)
       (expect (buffer-substring (point-min) (point-max))
-              :to-equal "What is your balance? 2500
+              :to-equal "What is your balance? 5000
 What is the APR of the card (as percent)? 12
-What is the montly payment you can make? 100
+What is the monthly payment you can make? 100
 
 It will take you 70 months to pay off this card."))))
 

@@ -31,6 +31,24 @@
     (display-buffer buffer)
     (set-buffer buffer)))
 
+(defun ccdc--read-positive-value (message)
+  (let ((result (read-number message)))
+    (if (> result 0)
+        result
+      (ccdc--read-positive-value message))))
+
+(defun ccdc--read-echo-positive-value (message)
+  (insert message)
+  (let ((result (ccdc--read-positive-value message)))
+    (insert (format " %g\n" result))
+    result))
+
+(defun ccdc--procedure ()
+  (insert (format "\nIt will take you %d months to pay off this card."
+                  (credit-card-compute-months-to-pay-off (ccdc--read-echo-positive-value "What is your balance?")
+                                                         (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?")
+                                                         (ccdc--read-echo-positive-value "What is the monthly payment you can make?")))))
+
 (defun ccdc--mode ()
   (kill-all-local-variables)  
   (setq major-mode 'credit-card-calculator-mode)
@@ -40,6 +58,7 @@
 (defun credit-card-compute-months ()
   (interactive)
   (ccdc--switch-to-new-buffer)
-  (ccdc--mode))
+  (ccdc--mode)
+  (ccdc--procedure))
 
 (provide 'credit-card-debt-calculator)
