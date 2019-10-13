@@ -1,3 +1,11 @@
+(defvar credit-card-calculator-mode nil
+  "Mode variable for \"Credit Card Calculator Mode\"")
+
+(defvar credit-card-mode-hook nil
+  "Hook functions for \"Credit Card Calculator Mode\"")
+
+(defconst ccdc--mode-name "Credit Card Calculator Mode")
+(defconst ccdc--buffer-name (concat "* " ccdc--mode-name " *"))
 
 (defun ccdc--raw-months-to-pay-off (balance apr-fraction monthly-payment)
   (let ((inc-i (+ (/ apr-fraction 365.0) 1.0))
@@ -13,15 +21,6 @@
    (ccdc--raw-months-to-pay-off balance
                                 (/ apr 100.0)
                                 monthly-payment)))
-
-(defvar credit-card-calculator-mode nil
-  "Mode variable for \"Credit Card Calculator Mode\"")
-
-(defvar credit-card-mode-hook nil
-  "Hook functions for \"Credit Card Calculator Mode\"")
-
-(defconst ccdc--mode-name "Credit Card Calculator Mode")
-(defconst ccdc--buffer-name (concat "* " ccdc--mode-name " *"))
 
 (defun ccdc--get-new-buffer ()
   (let ((old-buffer (get-buffer ccdc--buffer-name)))
