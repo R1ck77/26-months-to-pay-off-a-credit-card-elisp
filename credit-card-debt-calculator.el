@@ -2,8 +2,11 @@
 (defun ccdc--raw-months-to-pay-off (balance apr-fraction monthly-payment)
   (let ((inc-i (+ (/ apr-fraction 365.0) 1.0))
         (b-on-p (/ balance monthly-payment)))
-    (- (/ (log (+ 1.0 (* b-on-p (- 1 (expt inc-i 30.0)))))
-          (* 30.0 (log inc-i))))))
+    (let ((log-term (+ 1.0 (* b-on-p (- 1 (expt inc-i 30.0))))))
+      (if (> log-term 0)
+          (- (/ (log log-term)
+                (* 30.0 (log inc-i))))
+        (error "Unsolvable conditions")))))
 
 (defun credit-card-compute-months-to-pay-off (balance apr monthly-payment)
   (ceiling
@@ -44,10 +47,12 @@
     result))
 
 (defun ccdc--procedure ()
-  (insert (format "\nIt will take you %d months to pay off this card."
-                  (credit-card-compute-months-to-pay-off (ccdc--read-echo-positive-value "What is your balance?")
-                                                         (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?")
-                                                         (ccdc--read-echo-positive-value "What is the monthly payment you can make?")))))
+  (condition-case var
+   (insert (format "\nIt will take you %d months to pay off this card."
+                   (credit-card-compute-months-to-pay-off (ccdc--read-echo-positive-value "What is your balance?")
+                                                          (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?")
+                                                          (ccdc--read-echo-positive-value "What is the monthly payment you can make?"))))
+   (error (insert "\nThe payment is too low: you will never pay the debit off."))))
 
 (defun ccdc--mode ()
   (kill-all-local-variables)  
