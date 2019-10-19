@@ -90,7 +90,7 @@
   (setq mode-name ccdc--mode-name)
   (run-hooks 'credit-card-mode-hook))
 
-(defun credit-card-compute-months ()
+(defun credit-card-calculation  ()
   (interactive)
   (ccdc--switch-to-new-buffer)
   (ccdc--mode)
