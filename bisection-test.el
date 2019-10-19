@@ -16,4 +16,12 @@
               :to-equal 0.01)
       (expect (bisect (lambda (x) (+ 1 x))
                       -1 0)
-              :to-equal -1))))
+              :to-equal -1))
+    (it "returns the bisection of the solution with the default error"
+      (let ((result (bisect (lambda (x) (+ x 5))
+                            -11.2 100)))
+        (expect (<= (abs (- result -5)) 0.01))))
+    (it "returns the bisection of the solution with a custom error"
+      (let ((result (bisect (lambda (x) (+ x 5))
+                            -11.2 100 0.0003)))
+        (expect (<= (abs (- result -5)) 0.0003))))))
