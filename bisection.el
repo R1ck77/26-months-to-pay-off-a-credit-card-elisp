@@ -1,18 +1,39 @@
+(require 'cl)
 
-;;; TODO/FIXME THIS SUCKS BIG TIME. Use a result list to support
-(defun bisect--valid-argumentsp (f neg-x pos-x)
-  (let ((neg-v (funcall f neg-x))
-        (pos-v (funcall f pos-x)))
-    (when (> neg-v pos-v)
-      (let ((tmp neg-v))
-        (setq neg-v pos-v)
-        (setq pos-v tmp)))
-    (and (<= neg-v 0)
-         (>= pos-v  0))))
+;;; TODO/FIXME add a cache of evaluated points  
 
-(defun bisect (f neg-x pos-x)
-  (if (not (bisect--valid-argumentsp f neg-x pos-x))
-      (error "Invalid interval: the function doesn't change sign"))
-  )
+(defconst default-bisection-error 0.01
+  "we assume that a bisection without explicit error wants less than this absolute error")
+
+(defun bisect--sort-arguments (f &rest positions)
+  (let ((evaluated (mapcar f positions)))
+    (if (< (first positions) (second positions))
+        positions
+      (reverse positions))))
+
+(defun bisect--valid-argumentsp (f pos)
+  (let ((evaluated (mapcar f pos)))
+    (and (<= (first evaluated) 0)
+         (>= (second evaluated) 0))))
+
+(defun bisect--within-errorp (value error)
+  (<= (abs value) error))
+
+(defun bisect--solutionp (f pos error)
+  (let ((evaluated (mapcar f pos)))
+    (if (bisect--within-errorp (first evaluated) error)
+        (first pos)
+      (if (bisect--within-errorp (second evaluated) error)
+          (second pos)))))
+
+(defun bisect--recursively (f pos error)
+)
+
+(defun bisect (f neg-x pos-x &optional error)
+  (let ((error (or error default-bisection-error)))
+    (let ((solution (bisect--solutionp f (list neg-x pos-x) error)))
+      (or solution
+          (if (not (bisect--valid-argumentsp f sorted-pos))
+                (error "Invalid interval: the function doesn't change sign"))))))
 
 (provide 'bisection)
