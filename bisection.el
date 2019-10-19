@@ -28,13 +28,13 @@
 
 (defun bisect--next-interval (f pos)
   (let ((evaluated (mapcar f pos))
-        (middle-point (/ (apply '+ pos) 0.5)))
+        (middle-point (/ (apply '+ pos) 2)))
     (if (> (funcall f middle-point) 0)
         (list (first pos) middle-point)
       (list middle-point (second pos)))))
 
 (defun bisect--recursively (f pos error)
-  (let ((solution (bisect-solutionp f pos error)))
+  (let ((solution (bisect--solutionp f pos error)))
     (or solution
         (bisect--recursively f (bisect--next-interval f pos) error))))
 
@@ -44,6 +44,7 @@
       (or solution
           (let ((sorted-pos (bisect--sort-arguments f neg-x pos-x)))
             (if (not (bisect--valid-argumentsp f sorted-pos))
-                      (error "Invalid interval: the function doesn't change sign")))))))
+                (error "Invalid interval: the function doesn't change sign")
+              (bisect--recursively f sorted-pos error)))))))
 
 (provide 'bisection)
