@@ -1,3 +1,6 @@
+(setq load-path (cons "." load-path))
+(require 'bisection)
+
 (defvar credit-card-calculator-mode nil
   "Mode variable for \"Credit Card Calculator Mode\"")
 
@@ -11,7 +14,7 @@
 
 (defun ccdc--raw-months-to-pay-off (balance apr-fraction monthly-payment)
   (let ((inc-i (+ (/ apr-fraction 365.0) 1.0))
-        (b-on-p (/ balance monthly-payment)))
+        (b-on-p (/ balance (float monthly-payment))))
     (let ((log-term (+ 1.0 (* b-on-p (- 1 (expt inc-i 30.0))))))
       (if (> log-term 0)
           (- (/ (log log-term)
@@ -24,8 +27,20 @@
                                 (/ apr 100.0)
                                 monthly-payment)))
 
+(defun ccdc--generate-inverse-function (balance apr months)
+  (lexical-let ((balance balance)
+                (apr apr)
+                (months months))
+    (lambda (x)
+      (condition-case nil
+          (- (credit-card-compute-months-to-pay-off balance apr x) months)
+          (error 1)))))
+
 (defun credit-card-compute-payments-to-pay-off (balance apr months)
-  100.1)
+  (bisect-cached (ccdc--generate-inverse-function balance apr months)
+                 0
+                 (* 30 balance)
+                 0.001))
 
 (defun ccdc--get-new-buffer ()
   (let ((old-buffer (get-buffer ccdc--buffer-name)))
