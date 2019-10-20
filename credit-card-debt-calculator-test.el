@@ -43,5 +43,18 @@ The payment is too low: you will never pay the debit off."))
       (goto-char (point-max))
       (search-backward "The payment is too low")
       (expect (get-text-property (point) 'font-lock-face )
-              :to-equal '(:foreground "red")))))
+              :to-equal '(:foreground "red")))
+    (it "Money to solve the debt end-to-end test"
+      (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 70)))
+      (spy-on 'read-string :and-return-value "$")
+      (credit-card-calculation)
+      (expect (buffer-substring (point-min) (point-max))
+              :to-equal "Do you want to compute the time to pay the debt off (t) or the money required ($)? $
+What is your balance? 5000
+What is the APR of the card (as percent)? 12
+How long do you want to pay (months)? 70
+
+It will take 100$ payments to pay off the debt in the period selected."))))
+
+
 
