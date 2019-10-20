@@ -55,7 +55,7 @@
         (expect (funcall memoized 'default) :to-be 'default)
         (expect (funcall memoized 'default) :to-be 'default)
         (expect 'identity :to-have-been-called-times 1))))
-  (xdescribe "bisect-cached"
+  (describe "bisect-cached"
     (it "invokes the function only twice if both extremes are negative"
       (spy-on 'identity)
       (should-error (bisect-cached 'identity -100 -10))

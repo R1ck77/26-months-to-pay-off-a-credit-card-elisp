@@ -61,7 +61,7 @@
             cached)))))
 
 (defun bisect-cached (f neg-x pos-x &optional error)
-  (let ((cached-f (lambda (x) (funcall f x))))
+  (let ((cached-f (memoize-function f)))
     (bisect cached-f neg-x pos-x error)))
 
 (provide 'bisection)
