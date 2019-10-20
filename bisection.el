@@ -7,7 +7,7 @@
 
 (defun bisect--sort-arguments (f &rest positions)
   (let ((evaluated (mapcar f positions)))
-    (if (< (first positions) (second positions))
+    (if (< (first evaluated) (second evaluated))
         positions
       (reverse positions))))
 
