@@ -48,15 +48,17 @@
               (bisect--recursively f sorted-pos error)))))))
 
 (defun memoize-function (f)
+  "Create a memoized version of the function (one argument only)"
   (lexical-let ((f f)
                 (hash-table (make-hash-table)))
     (lambda (x)
-      (let ((cached (gethash x hash-table nil)))
-        (if cached
-            cached
-          (let ((result (funcall f x)))
-            (puthash x result hash-table)
-            result))))))
+      (let* ((default (make-symbol "default"))
+             (cached (gethash x hash-table default)))
+        (if (eq cached default)
+            (let ((result (funcall f x)))
+              (puthash x result hash-table)
+              result)
+            cached)))))
 
 (defun bisect-cached (f neg-x pos-x &optional error)
   (let ((cached-f (lambda (x) (funcall f x))))

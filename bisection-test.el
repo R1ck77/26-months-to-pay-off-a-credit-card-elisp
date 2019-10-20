@@ -48,6 +48,12 @@
         (expect (funcall memoized nil) :to-be nil)
         (expect (funcall memoized nil) :to-be nil)
         (expect (funcall memoized nil) :to-be nil)
+        (expect 'identity :to-have-been-called-times 1)))
+    (it "invokes the memoized function once even if the result is default"
+      (spy-on 'identity :and-call-through)
+      (let ((memoized (memoize-function 'identity)))
+        (expect (funcall memoized 'default) :to-be 'default)
+        (expect (funcall memoized 'default) :to-be 'default)
         (expect 'identity :to-have-been-called-times 1))))
   (xdescribe "bisect-cached"
     (it "invokes the function only twice if both extremes are negative"
