@@ -47,4 +47,19 @@
                 (error "Invalid interval: the function doesn't change sign")
               (bisect--recursively f sorted-pos error)))))))
 
+(defun memoize-function (f)
+  (lexical-let ((f f)
+                (hash-table (make-hash-table)))
+    (lambda (x)
+      (let ((cached (gethash x hash-table nil)))
+        (if cached
+            cached
+          (let ((result (funcall f x)))
+            (puthash x result hash-table)
+            result))))))
+
+(defun bisect-cached (f neg-x pos-x &optional error)
+  (let ((cached-f (lambda (x) (funcall f x))))
+    (bisect cached-f neg-x pos-x error)))
+
 (provide 'bisection)

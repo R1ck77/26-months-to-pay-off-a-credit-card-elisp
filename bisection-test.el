@@ -24,4 +24,37 @@
     (it "returns the bisection of the solution with a custom error"
       (let ((result (bisect (lambda (x) (+ x 5))
                             -11.2 100 0.0003)))
-        (expect (<= (abs (- result -5)) 0.0003))))))
+        (expect (<= (abs (- result -5)) 0.0003)))))
+  (describe "memoize-function"
+    (it "returns the result of the memoized function"
+      (spy-on 'identity :and-call-through)
+      (let ((memoized (memoize-function 'identity)))
+        (expect (funcall memoized 12) :to-be 12)
+        (expect (funcall memoized "12") :to-equal "12")
+        (expect (funcall memoized 7) :to-be 7)
+        (expect (funcall memoized nil) :to-be nil)))
+    (it "invokes the memoized function only once per value"
+      (spy-on 'identity :and-call-through)
+      (let ((memoized (memoize-function 'identity)))
+        (expect (funcall memoized 12) :to-be 12)
+        (expect (funcall memoized 42) :to-be 42)
+        (expect (funcall memoized 12) :to-be 12)
+        (expect (funcall memoized 42) :to-be 42)
+        (expect (funcall memoized 12) :to-be 12)
+        (expect 'identity :to-have-been-called-times 2)))
+    (it "invokes the memoized function once even if the result is nil"
+      (spy-on 'identity :and-call-through)
+      (let ((memoized (memoize-function 'identity)))
+        (expect (funcall memoized nil) :to-be nil)
+        (expect (funcall memoized nil) :to-be nil)
+        (expect (funcall memoized nil) :to-be nil)
+        (expect 'identity :to-have-been-called-times 1))))
+  (xdescribe "bisect-cached"
+    (it "invokes the function only twice if both extremes are negative"
+      (spy-on 'identity)
+      (should-error (bisect-cached 'identity -100 -10))
+      (expect 'identity :to-have-been-called-times 2))
+    (it "invokes the function only twice if both extremes are positive"
+      (spy-on 'identity)
+      (should-error (bisect-cached 'identity 100 10))
+      (expect 'identity :to-have-been-called-times 2))))
