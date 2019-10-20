@@ -24,6 +24,9 @@
                                 (/ apr 100.0)
                                 monthly-payment)))
 
+(defun credit-card-compute-payments-to-pay-off (balance apr months)
+  100.1)
+
 (defun ccdc--get-new-buffer ()
   (let ((old-buffer (get-buffer ccdc--buffer-name)))
     (when old-buffer
@@ -67,16 +70,29 @@
       ((equal result "$") :money-to-pay-debt)
       ((equal result "t") :time-to-pay-debt))))
 
+(defun ccdc--read-balance ()
+  (ccdc--read-echo-positive-value "What is your balance?"))
+
+(defun ccdc--read-apr ()
+  (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?"))
+
 (defun ccdc--time-to-pay-debt-procedure ()
   (condition-case var
    (insert (format "\nIt will take you %d months to pay off this card."
-                   (credit-card-compute-months-to-pay-off (ccdc--read-echo-positive-value "What is your balance?")
-                                                          (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?")
+                   (credit-card-compute-months-to-pay-off (ccdc--read-balance)
+                                                          (ccdc--read-apr)
                                                           (ccdc--read-echo-positive-value "What is the monthly payment you can make?"))))
    (error (insert (ccdc--red-text "\nThe payment is too low: you will never pay the debit off.")))))
 
+(defun ccdc--round-to-cents (value)
+  (/ (ceiling (* value 100)) 100.0))
+
 (defun ccdc--money-to-pay-debt-procedure ()
-  (error "this procedure has not been implemented (yet!)"))
+  (insert (format "\nIt will take %g$ payments to pay off the debt in the period selected."
+                  (ccdc--round-to-cents
+                   (credit-card-compute-payments-to-pay-off (ccdc--read-balance)
+                                                            (ccdc--read-apr)
+                                                            (ccdc--read-echo-positive-value "How long do you want to pay (months)?"))))))
 
 (defun ccdc--procedure ()
   (case (ccdc--ask-calculation-mode)
