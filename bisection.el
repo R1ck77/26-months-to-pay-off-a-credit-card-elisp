@@ -33,8 +33,10 @@
 
 (defun bisect--recursively (f pos error)
   (let ((solution (bisect--solutionp f pos error)))
-    (or solution
-        (bisect--recursively f (bisect--next-interval f pos) error))))
+    (while (not solution)
+      (setq pos (bisect--next-interval f pos))
+      (setq solution (bisect--solutionp f pos error)))
+    solution))
 
 (defun bisect (f neg-x pos-x &optional error)
   (let ((error (or error default-bisection-error)))
