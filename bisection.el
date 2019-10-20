@@ -1,7 +1,5 @@
 (require 'cl)
 
-;;; TODO/FIXME add a cache of evaluated points  
-
 (defconst default-bisection-error 0.01
   "we assume that a bisection without explicit error wants less than this absolute error")
 
