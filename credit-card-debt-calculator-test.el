@@ -8,6 +8,11 @@
     (it "computes the months to pay off your credit card correctly"
       (expect (credit-card-compute-months-to-pay-off 5000 12 100)
               :to-be 70)))
+  (describe "credit-card-compute-payments-to-pay-off"
+    (it "returns an inverse of the credit-card-compute-months-to-pay-off"
+      (let ((result (credit-card-compute-payments-to-pay-off 5000 13 14)))
+        (expect (credit-card-compute-months-to-pay-off 5000 13 result)
+                :to-be 14))))
   (describe "credit-card-calculation"
     (before-each
       (kill-buffer (get-buffer ccdc--buffer-name)))
