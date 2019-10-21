@@ -41,7 +41,7 @@ What is the APR of the card (as percent)? 12
 What is the monthly payment you can make? 20
 
 The payment is too low: you will never pay the debit off."))
-    (it "Prints the warning for unsolvability in red"
+    (it "prints the warning for unsolvability in red"
       (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 12 20)))
       (spy-on 'read-string :and-return-value "t")
       (credit-card-calculation)
@@ -49,7 +49,7 @@ The payment is too low: you will never pay the debit off."))
       (search-backward "The payment is too low")
       (expect (get-text-property (point) 'font-lock-face )
               :to-equal '(:foreground "red")))
-    (it "Money to solve the debt end-to-end test"
+    (it "solves the inverse problem"
       (let* ((balance 5000)
             (apr 12)
             (months-to-pay-off 70)
@@ -63,7 +63,18 @@ What is your balance? 5000
 What is the APR of the card (as percent)? 12
 How long do you want to pay (months)? 70
 
-It will take %g$ payments to pay off the debt in the period selected." (round-to-upper-cent expected-result)))))))
+It will take %g$ payments to pay off the debt in the period selected." (round-to-upper-cent expected-result)))))
+    (it "prints an appropriate error if the starting conditions are out of bounds"
+      (spy-on 'read-number :and-call-fake (generate-supplier (list 5000 1000000 1)))
+      (spy-on 'read-string :and-return-value "$")
+      (credit-card-calculation)
+      (expect (buffer-substring (point-min) (point-max))
+                :to-equal (format "Do you want to compute the time to pay the debt off (t) or the money required ($)? $
+What is your balance? 5000
+What is the APR of the card (as percent)? 1000000
+How long do you want to pay (months)? 1
+
+Invalid starting conditions.")))))
 
 
 
