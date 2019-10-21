@@ -26,7 +26,7 @@
 
 (defun bisect--next-interval (f pos)
   (let ((evaluated (mapcar f pos))
-        (middle-point (/ (apply '+ pos) 2)))
+        (middle-point (/ (apply '+ pos) 2.0)))
     (if (> (funcall f middle-point) 0)
         (list (first pos) middle-point)
       (list middle-point (second pos)))))
