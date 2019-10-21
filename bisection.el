@@ -39,9 +39,7 @@
     solution))
 
 (defun bisect (f neg-x pos-x &optional error)
-  (let ((neg-x (float neg-x))
-        (pos-x (float pos-x))
-        (error (or error default-bisection-error)))
+  (let ((error (or error default-bisection-error)))
     (let ((solution (bisect--solutionp f (list neg-x pos-x) error)))
       (or solution
           (let ((sorted-pos (bisect--sort-arguments f neg-x pos-x)))
