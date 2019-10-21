@@ -25,9 +25,9 @@
       (credit-card-calculation)
       (expect (buffer-substring (point-min) (point-max))
               :to-equal "Do you want to compute the time to pay the debt off (t) or the money required ($)? t
-What is your balance? 5000
-What is the APR of the card (as percent)? 12
-What is the monthly payment you can make? 100
+What is your balance? 5000.00
+What is the APR of the card (as percent)? 12.00
+What is the monthly payment you can make? 100.00
 
 It will take you 70 months to pay off this card."))
     (it "handles the case where the monthly payment is too low to pay off the debt"
@@ -36,9 +36,9 @@ It will take you 70 months to pay off this card."))
       (credit-card-calculation)
       (expect (buffer-substring (point-min) (point-max))
               :to-equal "Do you want to compute the time to pay the debt off (t) or the money required ($)? t
-What is your balance? 5000
-What is the APR of the card (as percent)? 12
-What is the monthly payment you can make? 20
+What is your balance? 5000.00
+What is the APR of the card (as percent)? 12.00
+What is the monthly payment you can make? 20.00
 
 The payment is too low: you will never pay the debit off."))
     (it "prints the warning for unsolvability in red"
@@ -59,8 +59,8 @@ The payment is too low: you will never pay the debit off."))
         (credit-card-calculation)
         (expect (buffer-substring (point-min) (point-max))
                 :to-equal (format "Do you want to compute the time to pay the debt off (t) or the money required ($)? $
-What is your balance? 5000
-What is the APR of the card (as percent)? 12
+What is your balance? 5000.00
+What is the APR of the card (as percent)? 12.00
 How long do you want to pay (months)? 70
 
 It will take %g$ payments to pay off the debt in the period selected." (round-to-upper-cent expected-result)))))
@@ -70,8 +70,8 @@ It will take %g$ payments to pay off the debt in the period selected." (round-to
       (credit-card-calculation)
       (expect (buffer-substring (point-min) (point-max))
                 :to-equal (format "Do you want to compute the time to pay the debt off (t) or the money required ($)? $
-What is your balance? 5000
-What is the APR of the card (as percent)? 1000000
+What is your balance? 5000.00
+What is the APR of the card (as percent)? 1000000.00
 How long do you want to pay (months)? 1
 
 Invalid starting conditions.")))))

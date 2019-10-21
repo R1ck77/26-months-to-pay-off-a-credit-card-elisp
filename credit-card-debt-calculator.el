@@ -59,10 +59,11 @@
         result
       (ccdc--read-positive-value message))))
 
-(defun ccdc--read-echo-positive-value (message)
+(defun ccdc--read-echo-positive-value (message &optional format-string)
   (insert message)
-  (let ((result (ccdc--read-positive-value (format "%s " message))))
-    (insert (format " %g\n" result))
+  (let ((result (ccdc--read-positive-value (format "%s " message)))
+        (format-string (or format-string "%s")))
+    (insert (format (concat " " format-string "\n") result))
     result))
 
 (defun ccdc--red-text (text)
@@ -86,28 +87,30 @@
       ((equal result "t") :time-to-pay-debt))))
 
 (defun ccdc--read-balance ()
-  (ccdc--read-echo-positive-value "What is your balance?"))
+  (ccdc--read-echo-positive-value "What is your balance?" "%.2f"))
 
 (defun ccdc--read-apr ()
-  (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?"))
+  (ccdc--read-echo-positive-value "What is the APR of the card (as percent)?" "%.2f"))
 
 (defun ccdc--time-to-pay-debt-procedure ()
   (condition-case var
    (insert (format "\nIt will take you %d months to pay off this card."
                    (credit-card-compute-months-to-pay-off (ccdc--read-balance)
                                                           (ccdc--read-apr)
-                                                          (ccdc--read-echo-positive-value "What is the monthly payment you can make?"))))
+                                                          (ccdc--read-echo-positive-value "What is the monthly payment you can make?" "%.2f"))))
    (error (insert (ccdc--red-text "\nThe payment is too low: you will never pay the debit off.")))))
 
 (defun round-to-upper-cent (value)
   (/ (ceiling (* value 100)) 100.0))
 
 (defun ccdc--money-to-pay-debt-procedure ()
-  (insert (format "\nIt will take %g$ payments to pay off the debt in the period selected."
-                  (round-to-upper-cent
-                   (credit-card-compute-payments-to-pay-off (ccdc--read-balance)
-                                                            (ccdc--read-apr)
-                                                            (ccdc--read-echo-positive-value "How long do you want to pay (months)?"))))))
+  (condition-case nil
+      (insert (format "\nIt will take %g$ payments to pay off the debt in the period selected."
+                      (round-to-upper-cent
+                       (credit-card-compute-payments-to-pay-off (ccdc--read-balance)
+                                                                (ccdc--read-apr)
+                                                                (ccdc--read-echo-positive-value "How long do you want to pay (months)?")))))
+    (error (insert (ccdc--red-text "\nInvalid starting conditions.")))))
 
 (defun ccdc--procedure ()
   (case (ccdc--ask-calculation-mode)
