@@ -99,12 +99,12 @@
                                                           (ccdc--read-echo-positive-value "What is the monthly payment you can make?"))))
    (error (insert (ccdc--red-text "\nThe payment is too low: you will never pay the debit off.")))))
 
-(defun ccdc--round-to-cents (value)
+(defun round-to-upper-cent (value)
   (/ (ceiling (* value 100)) 100.0))
 
 (defun ccdc--money-to-pay-debt-procedure ()
   (insert (format "\nIt will take %g$ payments to pay off the debt in the period selected."
-                  (ccdc--round-to-cents
+                  (round-to-upper-cent
                    (credit-card-compute-payments-to-pay-off (ccdc--read-balance)
                                                             (ccdc--read-apr)
                                                             (ccdc--read-echo-positive-value "How long do you want to pay (months)?"))))))
